@@ -78,11 +78,32 @@ class AiAssistant(models.AbstractModel):
                              "Rate limit", "rate limit", "API error"]
             ))
         ]
+        # ── Step 3.5: Proactive Knowledge Base Search ──────────
+        kb_context = ""
+        try:
+            # Search in name, body, and body_html
+            kb_domain = [
+                '|', '|',
+                ('name', 'ilike', query),
+                ('body', 'ilike', query),
+                ('body_html', 'ilike', query)
+            ]
+            # sudo() to ensure internal users can read documentation regardless of access rules
+            articles = self.env['knowledge.article'].sudo().search(kb_domain, limit=3)
+            if articles:
+                kb_context = "\n".join([
+                    f"ARTICLE: {a.name}\nCONTENT: {a.body or a.body_html or ''}"
+                    for a in articles
+                ])
+        except Exception as e:
+            _logger.error(f"KB Search error: {e}")
+
         ai_response = self.env['ai.provider'].generate_query(
             user_query=query,
             schema_json=schema_json,
             conversation_history=clean_history,
             model_override=model_override,
+            pre_fetched_knowledge=kb_context
         )
 
         if not ai_response:

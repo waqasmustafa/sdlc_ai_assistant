@@ -20,11 +20,13 @@ class AiProvider(models.AbstractModel):
 
 RULES:
 1. Tone: Professional, helpful, and conversational. You are a colleague, not a robot.
-2. YOUR PRIMARY MISSION: You are the smart brain of this Odoo system. Your primary source of truth for "how things work", "procedures", "internal policies", and "information" is the KNOWLEDGE BASE (knowledge.article).
-3. INTENT RECOGNITION: Any question starting with or containing "How to", "What is", "Why", "Explain", "Procedure", "Steps", or "Guide" must be treated as a KNOWLEDGE BASE request.
-4. Proactive Search: If a user asks a question and it doesn't clearly map to a database record (like a specific Sales Order), ALWAYS check the Knowledge Base first.
-5. Entity Extraction: Extract the CORE CONCEPT from the user's sentence. Example: "Tell me about the new AI procedure" → Core Concept: "AI procedure". Search both name and body for this concept.
-6. Contextual Awareness: Users may use pronouns like "it", "this", or "that article". Always look at the most recent search results or conversation context to resolve these.
+2. YOUR PRIMARY MISSION: You are the smart brain of this Odoo system. Your primary source of truth for "how things work", "procedures", "internal policies", and "information" is the KNOWLEDGE BASE (provided as CONTEXT if available).
+3. If PRE-FETCHED KNOWLEDGE is provided below, PRIORITIZE it above everything else.
+4. If the PRE-FETCHED KNOWLEDGE contains the answer, respond with type "text" and summarize the articles beautifully. Do NOT generate a data query if you already have the answer in the context.
+5. If the user asks for DATA not in the context (counts, lists, specific records), generate the correct JSON query using the SCHEMA.
+6. STRICTION: Do NOT guess. If information is not in the PRE-FETCHED KNOWLEDGE or the DATABASE SCHEMA, say you don't know or suggest checking the Knowledge Base.
+7. Knowledge Base IS the system's documentation. Treat it with the highest priority.
+8. Entity Extraction: Extract the CORE CONCEPT from the user's sentence.
 6. Never say "I can only assist with business data." Instead, say "I couldn't find specific data on that, but based on Odoo standards..." or "Let me check the knowledge base for you."
 7. Output JSON only for data/knowledge queries. For general help/greetings, use type "text".
 8. Domain syntax: [["field","operator","value"]]. Operators: =, !=, >, <, >=, <=, like, ilike, in, not in
@@ -278,7 +280,7 @@ If the question is already clear, return it EXACTLY as-is."""
 
     @api.model
     def generate_query(self, user_query, schema_json, conversation_history=None,
-                       provider_override=None, model_override=None):
+                       provider_override=None, model_override=None, pre_fetched_knowledge=""):
         """Send user query + schema to AI, get structured ORM queries back."""
         config = self.env['ai.config'].sudo().get_active_config()
         if not config:
@@ -291,7 +293,12 @@ If the question is already clear, return it EXACTLY as-is."""
             return {'type': 'error', 'message': f'{provider_type.title()} API key not configured.'}
 
         # ── Step 1: Refine the prompt using a fast model ──────────
-        refined_query = self._refine_prompt(config, user_query)
+        # Add pre-fetched knowledge to the context if available
+        full_query = user_query
+        if pre_fetched_knowledge:
+            full_query = f"PRE-FETCHED KNOWLEDGE FROM DATABASE:\n{pre_fetched_knowledge}\n\nUSER QUESTION: {user_query}"
+
+        refined_query = self._refine_prompt(config, full_query)
 
         today = date.today()
         try:

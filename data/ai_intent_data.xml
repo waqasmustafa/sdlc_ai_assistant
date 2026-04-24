@@ -211,11 +211,11 @@
     <record id="intent_knowledge" model="ai.intent">
         <field name="name">Knowledge Articles</field>
         <field name="model_id" ref="knowledge.model_knowledge_article"/>
-        <field name="keywords">knowledge,article,articles,documentation,wiki,help,manual,note,notes,internal knowledge,guide,guides,how to,procedure</field>
+        <field name="keywords">knowledge,article,articles,documentation,wiki,help,manual,note,notes,internal knowledge,guide,guides,how to,procedure,how,why,what,explain,steps,guide,process,tutorial,info,details</field>
         <field name="default_fields">name,body,create_date</field>
         <field name="default_limit">10</field>
-        <field name="priority">8</field>
-        <field name="description">Internal knowledge base articles and documentation</field>
+        <field name="priority">100</field>
+        <field name="description">Primary source of truth for all "How-to", "Procedures", "Information", and "System Documentation" questions.</field>
     </record>
 
 </odoo>
