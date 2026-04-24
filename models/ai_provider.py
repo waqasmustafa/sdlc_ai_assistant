@@ -238,9 +238,9 @@ CONDITIONAL:
 - "if revenue > X mark as high" → "Show leads with expected revenue greater than X"
 - "leads that need attention" → "Show leads in New or Qualified stage with high expected revenue"
 UNIVERSAL KNOWLEDGE PATTERNS:
-- Any informational question (how, what, why, procedure, guide, info) → "Search knowledge articles for [Core Concept] and explain it"
-- References to "it", "this", "that article" → Identify the last searched or discussed concept and query it again for more details.
-- Slang or complex sentences → Strip away filler words and extract only the business/knowledge terms for search.
+- Any informational question (how, what, why, procedure, guide, info) → Rewrite as a clear search for the main subject.
+- References to "it", "this", "that article" → Replace with the actual subject discussed previously.
+- Slang or complex sentences → Extract only the business/knowledge terms.
 
 If the question is already clear, return it EXACTLY as-is."""
 
@@ -292,13 +292,14 @@ If the question is already clear, return it EXACTLY as-is."""
         if not api_key:
             return {'type': 'error', 'message': f'{provider_type.title()} API key not configured.'}
 
-        # ── Step 1: Refine the prompt using a fast model ──────────
-        # Add pre-fetched knowledge to the context if available
-        full_query = user_query
+        # ── Step 1: Refine the prompt (SKIP if we already have knowledge context) ──
         if pre_fetched_knowledge:
-            full_query = f"PRE-FETCHED KNOWLEDGE FROM DATABASE:\n{pre_fetched_knowledge}\n\nUSER QUESTION: {user_query}"
-
-        refined_query = self._refine_prompt(config, full_query)
+            # If we already have articles, we don't need a refined search query
+            refined_query = user_query
+            full_query = f"PRE-FETCHED KNOWLEDGE CONTEXT:\n{pre_fetched_knowledge}\n\nUSER QUESTION: {user_query}"
+        else:
+            refined_query = self._refine_prompt(config, user_query)
+            full_query = refined_query
 
         today = date.today()
         try:
