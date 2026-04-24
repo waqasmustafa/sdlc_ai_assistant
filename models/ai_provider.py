@@ -527,9 +527,12 @@ If the question is already clear, return it EXACTLY as-is."""
             {"role": "user", "content": user_query},
         ]
 
-        refined = self._call_groq_single(
+        # Use provider-specific model for refinement
+        refiner_model = 'gpt-4o-mini' if config.provider == 'openai' else 'llama-3.1-8b-instant'
+
+        refined = self._call_api_single(
             config, messages, temperature=0.0, max_tokens=150,
-            json_mode=False, model=self.REFINER_MODEL,
+            json_mode=False, model=refiner_model,
         )
 
         if refined and refined != '__RATE_LIMITED__' and len(refined) > 3:
@@ -791,9 +794,12 @@ RULES:
         else:
             max_tok = 150
 
+        # Use provider-specific model for formatting
+        formatter_model = 'gpt-4o-mini' if config.provider == 'openai' else 'llama-3.1-8b-instant'
+
         result = self._call_api_single(
             config, messages, temperature=0.3, max_tokens=max_tok,
-            json_mode=False, model=self.FORMATTER_MODEL,
+            json_mode=False, model=formatter_model,
         )
 
         if result and result != '__RATE_LIMITED__':
