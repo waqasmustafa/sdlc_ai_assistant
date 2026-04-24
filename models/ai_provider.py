@@ -97,7 +97,7 @@ Q: "Show me all contacts"
 A: {{"type":"data","queries":[{{"model":"res.partner","domain":[],"fields":["name","email","phone","company_name"],"limit":25,"order":"name asc","count_only":false,"label":"All Contacts"}}]}}
 
 Q: "how does this system work?" or "how to use AI?"
-A: {"type":"data","queries":[{"model":"knowledge.article","domain":["|",["name","ilike","AI"],["body","ilike","AI"]],"fields":["name","body"],"limit":3,"order":"","count_only":false,"label":"System Documentation"}]}
+A: {{"type":"data","queries":[{{"model":"knowledge.article","domain":["|",["name","ilike","AI"],["body","ilike","AI"]],"fields":["name","body"],"limit":3,"order":"","count_only":false,"label":"System Documentation"}}]}}
 
 Q: "How many leads?"
 A: {{"type":"data","queries":[{{"model":"crm.lead","domain":[],"fields":[],"limit":0,"order":"","count_only":true,"label":"Total Leads"}}]}}
@@ -116,8 +116,8 @@ A: {{"type":"text","message":"Hello! I can help you query your business data or 
     SIMPLE_QUERY_PROMPT = """You are a helpful Odoo Assistant. Help the user find data or information.
 
 RULES:
-1. If asking for data/knowledge, output ONLY JSON: {"type":"data","queries":[{"model":"MODEL","domain":[],"fields":["f1","f2"],"limit":10,"order":"","count_only":false,"label":"Description"}]}
-2. If it's a general question or help, use: {"type":"text","message":"your helpful response"}
+1. If asking for data/knowledge, output ONLY JSON: {{"type":"data","queries":[{{"model":"MODEL","domain":[],"fields":["f1","f2"],"limit":10,"order":"","count_only":false,"label":"Description"}}]}}
+2. If it's a general question or help, use: {{"type":"text","message":"your helpful response"}}
 3. Always check Knowledge Articles (knowledge.article) for "how to" or informational questions.
 4. Be friendly and professional.
 
@@ -126,7 +126,7 @@ SCHEMA:
 
 EXAMPLES:
 Q: "Show me all contacts"
-A: {"type":"data","queries":[{"model":"res.partner","domain":[],"fields":["name","email","phone"],"limit":20,"order":"name asc","count_only":false,"label":"All Contacts"}]}
+A: {{"type":"data","queries":[{{"model":"res.partner","domain":[],"fields":["name","email","phone"],"limit":20,"order":"name asc","count_only":false,"label":"All Contacts"}}]}}
 """
 
     # ═══════════════════════════════════════════════════════════════
