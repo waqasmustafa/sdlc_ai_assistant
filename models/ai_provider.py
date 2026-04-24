@@ -296,7 +296,7 @@ If the question is already clear, return it EXACTLY as-is."""
         if pre_fetched_knowledge:
             # If we already have articles, we don't need a refined search query
             refined_query = user_query
-            full_query = f"PRE-FETCHED KNOWLEDGE CONTEXT:\n{pre_fetched_knowledge}\n\nUSER QUESTION: {user_query}"
+            full_query = user_query  # Keep user query clean, knowledge is in system prompt now
         else:
             refined_query = self._refine_prompt(config, user_query)
             full_query = refined_query
@@ -326,8 +326,13 @@ If the question is already clear, return it EXACTLY as-is."""
         }
 
         if is_smart:
-            # Full complex prompt for Llama 3.3 70B
-            system_prompt = self.QUERY_SYSTEM_PROMPT.format(**format_args)
+            # Full complex prompt
+            prompt_to_use = self.QUERY_SYSTEM_PROMPT
+            if pre_fetched_knowledge:
+                prompt_to_use += f"\n\nIMPORTANT CONTEXT (PRE-FETCHED KNOWLEDGE):\n{pre_fetched_knowledge}\n"
+                prompt_to_use += "\nRULE: The answer is in the CONTEXT above. Do NOT generate a JSON data query. Respond ONLY with type 'text'."
+            
+            system_prompt = prompt_to_use.format(**format_args)
             max_tok = 512
         else:
             # Simplified prompt for all other models
