@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odoo AI Assistant &mdash; Product Overview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: #2d2d2d; overflow-x: hidden; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* Scroll reveal */
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-left { opacity: 0; transform: translateX(-60px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-left.active { opacity: 1; transform: translateX(0); }
+        .reveal-right { opacity: 0; transform: translateX(60px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-right.active { opacity: 1; transform: translateX(0); }
+
+        /* Hero */
+        .hero { background: linear-gradient(135deg, #1a1035 0%, #2d1b69 30%, #714B67 70%, #9B6B8F 100%); color: white; padding: 80px 0 60px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; border-radius: 50%; background: rgba(155,107,143,0.12); }
+        .hero::after { content: ''; position: absolute; bottom: -120px; left: -80px; width: 350px; height: 350px; border-radius: 50%; background: rgba(113,75,103,0.08); }
+        .hero-inner { position: relative; z-index: 2; text-align: center; }
+        .hero-badge { display: inline-block; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 6px 18px; font-size: 12px; letter-spacing: 1.5px; margin-bottom: 20px; }
+        .hero h1 { font-size: 52px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 15px; }
+        .hero h1 span { background: linear-gradient(90deg, #ffd700, #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 19px; opacity: 0.85; max-width: 600px; margin: 0 auto 30px; line-height: 1.7; }
+        .hero-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.13); backdrop-filter: blur(5px); padding: 8px 18px; border-radius: 50px; font-size: 13px; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* Robot */
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes wave { 0%,70%,100% { transform: rotate(0); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-8deg); } 40% { transform: rotate(14deg); } 50% { transform: rotate(-4deg); } 60% { transform: rotate(10deg); } }
+        .robot { font-size: 80px; display: inline-block; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 10px 25px rgba(0,0,0,0.3)); }
+        .robot-wave { display: inline-block; animation: wave 2.5s ease-in-out infinite; transform-origin: 70% 70%; }
+
+        /* Screenshot */
+        .screenshot-wrap { margin: -40px auto 0; max-width: 950px; padding: 0 20px; position: relative; z-index: 3; }
+        .screenshot-wrap img { width: 100%; border-radius: 14px; box-shadow: 0 25px 70px rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.1); transition: transform 0.5s ease; }
+        .screenshot-wrap img:hover { transform: scale(1.02); }
+
+        /* Stats */
+        .stats { padding: 60px 0; }
+        .stats-grid { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; }
+        .stat-card { border-radius: 16px; padding: 30px 40px; text-align: center; min-width: 160px; color: white; transition: transform 0.3s ease; }
+        .stat-card:hover { transform: translateY(-8px) scale(1.05); }
+        .stat-number { font-size: 48px; font-weight: 800; }
+        .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; opacity: 0.8; }
+
+        /* Section */
+        .section { padding: 70px 0; }
+        .section-dark { background: #f8f6f7; }
+        .section-badge { display: inline-block; background: linear-gradient(135deg, #714B67, #9B6B8F); color: white; padding: 5px 16px; border-radius: 50px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; }
+        .section-title { font-size: 38px; font-weight: 800; margin-bottom: 10px; }
+        .section-title span { color: #714B67; }
+        .section-sub { color: #888; font-size: 16px; max-width: 550px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 45px; }
+
+        /* Feature cards */
+        .features-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .feature-card { background: white; border-radius: 16px; padding: 30px 24px; width: 320px; border: 1px solid #f0ecee; position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 2px 15px rgba(0,0,0,0.04); }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(113,75,103,0.15); }
+        .feature-card .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 4px; transform: scaleX(0); transition: transform 0.4s ease; transform-origin: left; }
+        .feature-card:hover .top-bar { transform: scaleX(1); }
+        .feature-icon { width: 54px; height: 54px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; transition: transform 0.3s ease; }
+        .feature-card:hover .feature-icon { transform: scale(1.15) rotate(5deg); }
+        .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+        .feature-card p { font-size: 13px; color: #666; line-height: 1.65; }
+
+        /* Data pills */
+        .data-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .data-pill { background: white; border: 2px solid #e8e0e5; border-radius: 50px; padding: 10px 22px; font-size: 13px; font-weight: 600; color: #714B67; cursor: default; transition: all 0.3s ease; }
+        .data-pill:hover { background: #714B67; color: white; border-color: #714B67; transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 20px rgba(113,75,103,0.3); }
+
+        /* Steps */
+        .steps-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 5px; }
+        .step-card { text-align: center; flex: 1; min-width: 200px; max-width: 270px; padding: 20px; }
+        .step-num { width: 65px; height: 65px; border-radius: 50%; color: white; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; transition: transform 0.3s ease; }
+        .step-card:hover .step-num { transform: scale(1.2) rotate(5deg); }
+        .step-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+        .step-card p { font-size: 13px; color: #777; line-height: 1.6; }
+        .step-arrow { font-size: 28px; color: #714B67; padding-top: 25px; flex-shrink: 0; }
+
+        /* Access cards */
+        .access-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .access-card { background: white; border-radius: 14px; padding: 30px; width: 290px; text-align: center; box-shadow: 0 3px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
+        .access-card:hover { transform: translateY(-8px); }
+        .access-icon { font-size: 42px; margin-bottom: 12px; }
+        .access-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .access-card p { font-size: 13px; color: #777; }
+
+        /* How to use - accordion */
+        .howto { max-width: 700px; margin: 0 auto; }
+        .howto-step { background: white; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); overflow: hidden; transition: all 0.3s ease; }
+        .howto-step.active { box-shadow: 0 5px 25px rgba(113,75,103,0.15); }
+        .howto-header { display: flex; align-items: center; padding: 18px 22px; cursor: pointer; transition: background 0.3s ease; }
+        .howto-header:hover { background: #faf8f9; }
+        .howto-num { width: 38px; height: 38px; border-radius: 10px; color: white; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 16px; }
+        .howto-header h4 { font-size: 15px; font-weight: 700; flex-grow: 1; }
+        .howto-arrow { font-size: 18px; color: #999; transition: transform 0.3s ease; }
+        .howto-step.active .howto-arrow { transform: rotate(180deg); }
+        .howto-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .howto-step.active .howto-body { max-height: 200px; }
+        .howto-body p { padding: 0 22px 18px 76px; font-size: 13px; color: #666; line-height: 1.7; }
+
+        /* Example queries */
+        .examples-grid { display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; }
+        .example-group { width: 470px; }
+        .example-group h4 { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+        .example-item { background: white; border-radius: 10px; padding: 11px 18px; margin-bottom: 7px; font-size: 13px; color: #444; box-shadow: 0 1px 5px rgba(0,0,0,0.03); transition: all 0.3s ease; cursor: default; }
+        .example-item:hover { transform: translateX(8px); box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+
+        /* Config cards */
+        .config-grid { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+        .config-card { background: white; border-radius: 10px; padding: 18px 22px; width: 245px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: transform 0.3s ease; }
+        .config-card:hover { transform: translateY(-5px); }
+        .config-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .config-card p { font-size: 12px; color: #777; }
+
+        /* Tech specs */
+        .specs-grid { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+        .spec-card { background: white; border-radius: 10px; padding: 18px 28px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); min-width: 130px; transition: transform 0.3s ease; }
+        .spec-card:hover { transform: translateY(-4px); }
+        .spec-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .spec-value { font-size: 16px; font-weight: 700; color: #714B67; }
+
+        /* Footer */
+        .footer { background: linear-gradient(135deg, #1a1035, #2d1b69, #714B67); color: white; text-align: center; padding: 55px 20px; }
+        .footer h3 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+        .footer p { opacity: 0.6; font-size: 14px; }
+        .footer .disclaimer { opacity: 0.35; font-size: 11px; margin-top: 18px; }
+
+        /* Screenshot sections */
+        .ss-wrap { text-align: center; max-width: 950px; margin: 30px auto 0; }
+        .ss-wrap img { width: 100%; border-radius: 14px; box-shadow: 0 15px 50px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08); transition: transform 0.5s ease; }
+        .ss-wrap img:hover { transform: scale(1.02); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .stat-number { font-size: 36px; }
+            .section-title { font-size: 28px; }
+            .step-arrow { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container hero-inner">
+        <div class="hero-badge">&#9889; POWERED BY AI &bull; BUILT FOR ODOO 18</div>
+        <div class="robot"><span class="robot-wave">&#129302;</span></div>
+        <h1>Odoo <span>AI Assistant</span></h1>
+        <p>Ask questions in plain English. Get instant answers from your Odoo data. No reports. No filters. Just ask.</p>
+        <div class="hero-tags">
+            <span class="hero-tag">&#128172; Natural Language</span>
+            <span class="hero-tag">&#9889; Real-time Data</span>
+            <span class="hero-tag">&#128274; Secure &amp; Private</span>
+            <span class="hero-tag">&#128241; Mobile Ready</span>
+        </div>
+    </div>
+</section>
+
+<!-- SCREENSHOT -->
+<div class="screenshot-wrap reveal">
+    <img src="screenshot_chat.png" alt="Odoo AI Assistant"/>
+</div>
+
+<!-- STATS WITH COUNTER -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card reveal" style="background: linear-gradient(135deg, #714B67, #9B6B8F); transition-delay: 0.1s;">
+                <div class="stat-number" data-target="18">0</div>
+                <div class="stat-label">Data Areas</div>
+            </div>
+            <div class="stat-card reveal" style="background: linear-gradient(135deg, #2d1b69, #4a2d8a); transition-delay: 0.2s;">
+                <div class="stat-number" data-target="6">0</div>
+                <div class="stat-label">AI Models</div>
+            </div>
+            <div class="stat-card reveal" style="background: linear-gradient(135deg, #1a6b4a, #28a745); transition-delay: 0.3s;">
+                <div class="stat-number" data-target="3">0</div>
+                <div class="stat-label">Step Pipeline</div>
+            </div>
+            <div class="stat-card reveal" style="background: linear-gradient(135deg, #b8860b, #e6a817); transition-delay: 0.4s;">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Availability</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- KEY FEATURES -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">FEATURES</span>
+            <h2 class="section-title">Everything You Need to <span>Query Your Data</span></h2>
+            <p class="section-sub">From simple counts to complex analytics &mdash; all through a chat interface</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal-left" style="transition-delay: 0.1s;">
+                <div class="top-bar" style="background: linear-gradient(90deg, #6366f1, #818cf8);"></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #ede9fe, #c7d2fe);">&#128172;</div>
+                <h3>Natural Language Chat</h3>
+                <p>Ask in plain English. The AI understands slang, abbreviations, and business terms. No SQL needed.</p>
+            </div>
+            <div class="feature-card reveal-left" style="transition-delay: 0.2s;">
+                <div class="top-bar" style="background: linear-gradient(90deg, #06b6d4, #67e8f9);"></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #cffafe, #a5f3fc);">&#128202;</div>
+                <h3>18 Data Areas</h3>
+                <p>Contacts, CRM, Sales, HR, Products, Inventory, Accounting, Calendar &mdash; one chat window.</p>
+            </div>
+            <div class="feature-card reveal-left" style="transition-delay: 0.3s;">
+                <div class="top-bar" style="background: linear-gradient(90deg, #10b981, #6ee7b7);"></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">&#128274;</div>
+                <h3>Secure &amp; Access Controlled</h3>
+                <p>Role-based access. Per-user data isolation, daily rate limits, and ORM-level security.</p>
+            </div>
+            <div class="feature-card reveal-left" style="transition-delay: 0.4s;">
+                <div class="top-bar" style="background: linear-gradient(90deg, #f59e0b, #fcd34d);"></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">&#128229;</div>
+                <h3>Export Anywhere</h3>
+                <p>Download as CSV or JSON. Copy tables to clipboard. Download entire conversations.</p>
+            </div>
+            <div class="feature-card reveal-left" style="transition-delay: 0.5s;">
+                <div class="top-bar" style="background: linear-gradient(90deg, #ec4899, #f9a8d4);"></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8);">&#9889;</div>
+                <h3>6 Models + Auto-Fallback</h3>
+                <p>Switch models on the fly. Auto-fallback silently switches when rate limited.</p>
+            </div>
+            <div class="feature-card reveal-left" style="transition-delay: 0.6s;">
+                <div class="top-bar" style="background: linear-gradient(90deg, #8b5cf6, #c4b5fd);"></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">&#128241;</div>
+                <h3>Mobile Responsive</h3>
+                <p>Works on desktop, tablet, and mobile. Collapsible sidebar, adaptive layout.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">HOW IT WORKS</span>
+            <h2 class="section-title">Get Answers in <span>3 Simple Steps</span></h2>
+            <p class="section-sub">Our 3-step AI pipeline processes your question in seconds</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card reveal" style="transition-delay: 0.1s;">
+                <div class="step-num" style="background: linear-gradient(135deg, #1a1035, #2d1b69); box-shadow: 0 5px 20px rgba(45,27,105,0.3);">01</div>
+                <h3>You Ask</h3>
+                <p>Type your question. The Prompt Refiner cleans and optimizes it.</p>
+            </div>
+            <div class="step-arrow">&#10132;</div>
+            <div class="step-card reveal" style="transition-delay: 0.3s;">
+                <div class="step-num" style="background: linear-gradient(135deg, #714B67, #9B6B8F); box-shadow: 0 5px 20px rgba(113,75,103,0.3);">02</div>
+                <h3>AI Processes</h3>
+                <p>Query Generator builds the database query. Data fetched via Odoo ORM.</p>
+            </div>
+            <div class="step-arrow">&#10132;</div>
+            <div class="step-card reveal" style="transition-delay: 0.5s;">
+                <div class="step-num" style="background: linear-gradient(135deg, #28a745, #34ce57); box-shadow: 0 5px 20px rgba(40,167,69,0.3);">03</div>
+                <h3>Get Answer</h3>
+                <p>Response Formatter creates a clean answer with real data.</p>
+            </div>
+        </div>
+        <div class="ss-wrap reveal">
+            <img src="screenshot_qa.png" alt="Question and Answer"/>
+        </div>
+    </div>
+</section>
+
+<!-- DATA AREAS -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">DATA AREAS</span>
+            <h2 class="section-title">Query <span>18 Business Areas</span> Instantly</h2>
+        </div>
+        <div class="data-grid reveal">
+            <span class="data-pill">&#128101; Contacts</span>
+            <span class="data-pill">&#128227; CRM Leads</span>
+            <span class="data-pill">&#128722; Sales Orders</span>
+            <span class="data-pill">&#128196; Order Lines</span>
+            <span class="data-pill">&#128100; Employees</span>
+            <span class="data-pill">&#127970; Departments</span>
+            <span class="data-pill">&#128188; Job Positions</span>
+            <span class="data-pill">&#128230; Products</span>
+            <span class="data-pill">&#127991; Categories</span>
+            <span class="data-pill">&#128196; Invoices</span>
+            <span class="data-pill">&#128179; Payments</span>
+            <span class="data-pill">&#127942; Sales Teams</span>
+            <span class="data-pill">&#128200; CRM Stages</span>
+            <span class="data-pill">&#128666; Transfers</span>
+            <span class="data-pill">&#127981; Warehouses</span>
+            <span class="data-pill">&#128230; Stock</span>
+            <span class="data-pill">&#128197; Calendar</span>
+            <span class="data-pill">&#127758; Companies</span>
+        </div>
+    </div>
+</section>
+
+<!-- EXAMPLES -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">EXAMPLES</span>
+            <h2 class="section-title">Just Ask <span>Naturally</span></h2>
+        </div>
+        <div class="examples-grid">
+            <div class="example-group reveal-left" style="transition-delay: 0.1s;">
+                <h4 style="color: #6366f1;">&#128101; Contacts &amp; CRM</h4>
+                <div class="example-item" style="border-left: 4px solid #6366f1;">"Show me all contacts from India"</div>
+                <div class="example-item" style="border-left: 4px solid #6366f1;">"How many leads are in Won stage?"</div>
+                <div class="example-item" style="border-left: 4px solid #6366f1;">"What is the email of Mitchell Admin?"</div>
+                <div class="example-item" style="border-left: 4px solid #6366f1;">"Top 5 leads by expected revenue"</div>
+            </div>
+            <div class="example-group reveal-right" style="transition-delay: 0.2s;">
+                <h4 style="color: #10b981;">&#128722; Sales &amp; Invoices</h4>
+                <div class="example-item" style="border-left: 4px solid #10b981;">"What is the total sales amount?"</div>
+                <div class="example-item" style="border-left: 4px solid #10b981;">"Show me all confirmed sales orders"</div>
+                <div class="example-item" style="border-left: 4px solid #10b981;">"Which customer placed the highest order?"</div>
+                <div class="example-item" style="border-left: 4px solid #10b981;">"List all unpaid invoices"</div>
+            </div>
+            <div class="example-group reveal-left" style="transition-delay: 0.3s;">
+                <h4 style="color: #f59e0b;">&#127970; HR &amp; Employees</h4>
+                <div class="example-item" style="border-left: 4px solid #f59e0b;">"List all employees in Engineering"</div>
+                <div class="example-item" style="border-left: 4px solid #f59e0b;">"How many employees in each department?"</div>
+                <div class="example-item" style="border-left: 4px solid #f59e0b;">"Who is the manager of Sales?"</div>
+                <div class="example-item" style="border-left: 4px solid #f59e0b;">"Phone number of John?"</div>
+            </div>
+            <div class="example-group reveal-right" style="transition-delay: 0.4s;">
+                <h4 style="color: #ec4899;">&#128230; Products &amp; Inventory</h4>
+                <div class="example-item" style="border-left: 4px solid #ec4899;">"What is the most expensive product?"</div>
+                <div class="example-item" style="border-left: 4px solid #ec4899;">"Show me current stock levels"</div>
+                <div class="example-item" style="border-left: 4px solid #ec4899;">"List all product categories"</div>
+                <div class="example-item" style="border-left: 4px solid #ec4899;">"How many warehouses do we have?"</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODEL SELECTOR -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">AI MODELS</span>
+            <h2 class="section-title"><span>6 AI Models</span> at Your Fingertips</h2>
+            <p class="section-sub">Switch instantly from the chat dropdown</p>
+        </div>
+        <div class="ss-wrap reveal">
+            <img src="screenshot_model_select.png" alt="Model Selector"/>
+        </div>
+    </div>
+</section>
+
+<!-- ACCESS CONTROL -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">ACCESS CONTROL</span>
+            <h2 class="section-title">Role-Based <span>User Access</span></h2>
+            <p class="section-sub">Set in Settings &#8594; Users &#8594; Access Rights tab</p>
+        </div>
+        <div class="access-grid">
+            <div class="access-card reveal" style="border-top: 5px solid #dc3545; transition-delay: 0.1s;">
+                <div class="access-icon">&#128683;</div>
+                <h4 style="color: #dc3545;">No Access</h4>
+                <p>AI Assistant completely hidden. User cannot see or access the app.</p>
+            </div>
+            <div class="access-card reveal" style="border-top: 5px solid #ffc107; transition-delay: 0.2s;">
+                <div class="access-icon">&#128100;</div>
+                <h4 style="color: #b8860b;">User: Chat Only</h4>
+                <p>Can chat and view own conversation history. No configuration access.</p>
+            </div>
+            <div class="access-card reveal" style="border-top: 5px solid #28a745; transition-delay: 0.3s;">
+                <div class="access-icon">&#128737;</div>
+                <h4 style="color: #28a745;">Admin: Full Access</h4>
+                <p>Chat + configure AI settings, models, intent mappings, and user access.</p>
+            </div>
+        </div>
+        <div class="ss-wrap reveal">
+            <img src="screenshot_access.png" alt="Access Control Settings"/>
+        </div>
+    </div>
+</section>
+
+<!-- GETTING STARTED - ACCORDION -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">GETTING STARTED</span>
+            <h2 class="section-title">Up and Running in <span>4 Steps</span></h2>
+            <p class="section-sub">Click each step to learn more</p>
+        </div>
+        <div class="howto reveal">
+            <div class="howto-step active" onclick="toggleStep(this)">
+                <div class="howto-header">
+                    <div class="howto-num" style="background: linear-gradient(135deg, #6366f1, #818cf8);">1</div>
+                    <h4>Open AI Assistant</h4>
+                    <span class="howto-arrow">&#9660;</span>
+                </div>
+                <div class="howto-body">
+                    <p>Click <strong>"AI Assistant"</strong> in the left sidebar. You'll see the chat interface with conversation history on the left and the chat area on the right.</p>
+                </div>
+            </div>
+            <div class="howto-step" onclick="toggleStep(this)">
+                <div class="howto-header">
+                    <div class="howto-num" style="background: linear-gradient(135deg, #06b6d4, #67e8f9);">2</div>
+                    <h4>Select AI Model</h4>
+                    <span class="howto-arrow">&#9660;</span>
+                </div>
+                <div class="howto-body">
+                    <p>Choose from the dropdown at the top. <strong>Llama 3.3 70B (Smart)</strong> is recommended for best accuracy. You can switch anytime.</p>
+                </div>
+            </div>
+            <div class="howto-step" onclick="toggleStep(this)">
+                <div class="howto-header">
+                    <div class="howto-num" style="background: linear-gradient(135deg, #10b981, #6ee7b7);">3</div>
+                    <h4>Ask Your Question</h4>
+                    <span class="howto-arrow">&#9660;</span>
+                </div>
+                <div class="howto-body">
+                    <p>Type in plain English and press <strong>Enter</strong>. Try: "How many contacts?", "Top 5 sales", "Email of John?", "Show all employees"</p>
+                </div>
+            </div>
+            <div class="howto-step" onclick="toggleStep(this)">
+                <div class="howto-header">
+                    <div class="howto-num" style="background: linear-gradient(135deg, #f59e0b, #fcd34d);">4</div>
+                    <h4>Get Answer &amp; Export</h4>
+                    <span class="howto-arrow">&#9660;</span>
+                </div>
+                <div class="howto-body">
+                    <p>The AI responds with a clear answer. For lists, export as <strong>CSV</strong> or <strong>JSON</strong>. Download entire conversations. Rename or delete chats.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONFIGURATION -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-badge">CONFIGURATION</span>
+            <h2 class="section-title">Easy Admin <span>Setup</span></h2>
+        </div>
+        <div class="ss-wrap reveal">
+            <img src="screenshot_config.png" alt="Configuration"/>
+        </div>
+        <div class="config-grid reveal" style="margin-top: 30px;">
+            <div class="config-card" style="border-left: 4px solid #6366f1;">
+                <h4>&#128273; API Key</h4>
+                <p>Enter Groq API key. Free tier available at console.groq.com</p>
+            </div>
+            <div class="config-card" style="border-left: 4px solid #10b981;">
+                <h4>&#9881; Default Model</h4>
+                <p>Select "Model in Use" from the dropdown.</p>
+            </div>
+            <div class="config-card" style="border-left: 4px solid #f59e0b;">
+                <h4>&#129513; Intent Mappings</h4>
+                <p>Add or disable queryable data areas.</p>
+            </div>
+            <div class="config-card" style="border-left: 4px solid #ec4899;">
+                <h4>&#128101; User Access</h4>
+                <p>Set access levels in Settings &#8594; Users.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TECH SPECS -->
+<section class="section section-dark" style="padding: 45px 0;">
+    <div class="container">
+        <div class="specs-grid reveal">
+            <div class="spec-card"><div class="spec-label">Provider</div><div class="spec-value">Groq Cloud</div></div>
+            <div class="spec-card"><div class="spec-label">Pipeline</div><div class="spec-value">3-Step AI</div></div>
+            <div class="spec-card"><div class="spec-label">Odoo</div><div class="spec-value">18.0 CE</div></div>
+            <div class="spec-card"><div class="spec-label">Security</div><div class="spec-value">ORM + ACL</div></div>
+            <div class="spec-card"><div class="spec-label">License</div><div class="spec-value">LGPL-3</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<section class="footer">
+    <div class="robot" style="font-size: 55px; margin-bottom: 10px;"><span class="robot-wave">&#129302;</span></div>
+    <h3>Odoo AI Assistant</h3>
+    <p>Powered by Groq Cloud AI &#8226; Built for Odoo 18.0 Community</p>
+    <p class="disclaimer">AI responses may not be 100% accurate. Please verify important business data before making decisions.</p>
+</section>
+
+<script>
+// Scroll reveal
+function revealOnScroll() {
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if (top < window.innerHeight - 80) el.classList.add('active');
+    });
+}
+window.addEventListener('scroll', revealOnScroll);
+window.addEventListener('load', revealOnScroll);
+
+// Counter animation
+function animateCounters() {
+    document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        if (target === 0) return;
+        const top = el.getBoundingClientRect().top;
+        if (top < window.innerHeight && !el.dataset.done) {
+            el.dataset.done = '1';
+            let current = 0;
+            const step = Math.ceil(target / 40);
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) { current = target; clearInterval(timer); }
+                el.textContent = current;
+            }, 30);
+        }
+    });
+}
+window.addEventListener('scroll', animateCounters);
+window.addEventListener('load', animateCounters);
+
+// Accordion
+function toggleStep(el) {
+    const wasActive = el.classList.contains('active');
+    document.querySelectorAll('.howto-step').forEach(s => s.classList.remove('active'));
+    if (!wasActive) el.classList.add('active');
+}
+</script>
+
+</body>
+</html>

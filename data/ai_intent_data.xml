@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ══════════════════════════════════════════════════════════════
+         Pre-configured intents for common Odoo models.
+         Users can add more via the UI.
+         ══════════════════════════════════════════════════════════════ -->
+
+    <!-- CRM: Contacts / Partners -->
+    <record id="intent_contacts" model="ai.intent">
+        <field name="name">Contacts / Partners</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="keywords">contact,contacts,customer,customers,partner,partners,client,clients,vendor,vendors,supplier,suppliers,people,person,company,companies</field>
+        <field name="default_fields">name,email,phone,city,country_id,company_name,function</field>
+        <field name="default_limit">10</field>
+        <field name="priority">10</field>
+        <field name="description">Contacts and partners in the system (customers, vendors, companies)</field>
+    </record>
+
+    <!-- CRM: Leads / Opportunities -->
+    <record id="intent_leads" model="ai.intent">
+        <field name="name">CRM Leads / Opportunities</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="keywords">lead,leads,opportunity,opportunities,pipeline,deal,deals,prospect,prospects,crm,sales pipeline</field>
+        <field name="default_fields">name,contact_name,email_from,phone,expected_revenue,stage_id,user_id,create_date</field>
+        <field name="default_limit">10</field>
+        <field name="priority">10</field>
+        <field name="description">CRM leads and opportunities (sales pipeline)</field>
+    </record>
+
+    <!-- Sales: Orders -->
+    <record id="intent_sales" model="ai.intent">
+        <field name="name">Sales Orders</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="keywords">sale,sales,order,orders,quotation,quotations,sale order,sales order,so</field>
+        <field name="default_fields">name,partner_id,amount_total,state,date_order,user_id</field>
+        <field name="default_limit">10</field>
+        <field name="priority">10</field>
+        <field name="description">Sales orders and quotations</field>
+    </record>
+
+    <!-- HR: Employees -->
+    <record id="intent_employees" model="ai.intent">
+        <field name="name">Employees</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="keywords">employee,employees,staff,team,workforce,people,worker,workers,hr,human resource</field>
+        <field name="default_fields">name,job_title,department_id,work_email,work_phone,parent_id</field>
+        <field name="default_limit">15</field>
+        <field name="priority">10</field>
+        <field name="description">Employees and HR data</field>
+    </record>
+
+    <!-- HR: Departments -->
+    <record id="intent_departments" model="ai.intent">
+        <field name="name">Departments</field>
+        <field name="model_id" ref="hr.model_hr_department"/>
+        <field name="keywords">department,departments,team,teams,division,divisions</field>
+        <field name="default_fields">name,manager_id,parent_id,total_employee</field>
+        <field name="default_limit">20</field>
+        <field name="priority">8</field>
+        <field name="description">Company departments and their managers</field>
+    </record>
+
+    <!-- Inventory: Products -->
+    <record id="intent_products" model="ai.intent">
+        <field name="name">Products</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="keywords">product,products,item,items,inventory,stock,goods,merchandise,catalog</field>
+        <field name="default_fields">name,list_price,standard_price,type,categ_id</field>
+        <field name="default_limit">10</field>
+        <field name="priority">10</field>
+        <field name="description">Products in the catalog</field>
+    </record>
+
+    <!-- Invoices -->
+    <record id="intent_invoices" model="ai.intent">
+        <field name="name">Invoices</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="keywords">invoice,invoices,bill,bills,accounting,receivable,payable,journal entry</field>
+        <field name="default_fields">name,partner_id,amount_total,state,invoice_date,payment_state</field>
+        <field name="default_limit">10</field>
+        <field name="priority">10</field>
+        <field name="description">Invoices and bills</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Additional Odoo app data
+         ══════════════════════════════════════════════════════════════ -->
+
+    <!-- Sales: Order Lines -->
+    <record id="intent_sale_order_lines" model="ai.intent">
+        <field name="name">Sales Order Lines</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="keywords">sale line,sales line,order line,sold product,sold item,line item,sale detail,order detail,quantity sold</field>
+        <field name="default_fields">order_id,product_id,product_uom_qty,price_unit,price_subtotal,state</field>
+        <field name="default_limit">15</field>
+        <field name="priority">8</field>
+        <field name="description">Individual line items within sales orders (products sold, quantities, prices)</field>
+    </record>
+
+    <!-- Accounting: Payments -->
+    <record id="intent_payments" model="ai.intent">
+        <field name="name">Payments</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="keywords">payment,payments,paid,received,pay,money received,money paid,transaction,transactions</field>
+        <field name="default_fields">name,partner_id,amount,payment_type,state,date,journal_id</field>
+        <field name="default_limit">10</field>
+        <field name="priority">9</field>
+        <field name="description">Customer and vendor payments</field>
+    </record>
+
+    <!-- CRM: Sales Teams -->
+    <record id="intent_sales_teams" model="ai.intent">
+        <field name="name">Sales Teams</field>
+        <field name="model_id" ref="crm.model_crm_team"/>
+        <field name="keywords">sales team,sales teams,team,crm team,channel</field>
+        <field name="default_fields">name,user_id,member_ids,active</field>
+        <field name="default_limit">10</field>
+        <field name="priority">7</field>
+        <field name="description">Sales teams and their members</field>
+    </record>
+
+    <!-- CRM: Stages -->
+    <record id="intent_crm_stages" model="ai.intent">
+        <field name="name">CRM Stages</field>
+        <field name="model_id" ref="crm.model_crm_stage"/>
+        <field name="keywords">stage,stages,pipeline stage,crm stage,funnel</field>
+        <field name="default_fields">name,sequence,is_won</field>
+        <field name="default_limit">10</field>
+        <field name="priority">6</field>
+        <field name="description">CRM pipeline stages (New, Qualified, Won, etc.)</field>
+    </record>
+
+    <!-- HR: Job Positions -->
+    <record id="intent_jobs" model="ai.intent">
+        <field name="name">Job Positions</field>
+        <field name="model_id" ref="hr.model_hr_job"/>
+        <field name="keywords">job,jobs,position,positions,role,roles,vacancy,vacancies,hiring,recruitment</field>
+        <field name="default_fields">name,department_id,no_of_recruitment,no_of_hired_employee,state</field>
+        <field name="default_limit">15</field>
+        <field name="priority">7</field>
+        <field name="description">Job positions and recruitment status</field>
+    </record>
+
+    <!-- Stock: Transfers / Deliveries -->
+    <record id="intent_transfers" model="ai.intent">
+        <field name="name">Stock Transfers / Deliveries</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="keywords">transfer,transfers,delivery,deliveries,shipment,shipments,picking,receipt,receipts,dispatch,incoming,outgoing</field>
+        <field name="default_fields">name,partner_id,picking_type_id,state,scheduled_date,origin</field>
+        <field name="default_limit">10</field>
+        <field name="priority">9</field>
+        <field name="description">Stock transfers, deliveries, and receipts</field>
+    </record>
+
+    <!-- Stock: Warehouses -->
+    <record id="intent_warehouses" model="ai.intent">
+        <field name="name">Warehouses</field>
+        <field name="model_id" ref="stock.model_stock_warehouse"/>
+        <field name="keywords">warehouse,warehouses,storage,location,depot</field>
+        <field name="default_fields">name,code,partner_id,active</field>
+        <field name="default_limit">10</field>
+        <field name="priority">7</field>
+        <field name="description">Warehouses and storage locations</field>
+    </record>
+
+    <!-- Stock: Inventory / Stock on Hand -->
+    <record id="intent_stock_quant" model="ai.intent">
+        <field name="name">Stock on Hand</field>
+        <field name="model_id" ref="stock.model_stock_quant"/>
+        <field name="keywords">stock on hand,inventory,quantity,available stock,stock level,in stock,out of stock,stock count</field>
+        <field name="default_fields">product_id,location_id,quantity,reserved_quantity</field>
+        <field name="default_limit">15</field>
+        <field name="priority">9</field>
+        <field name="description">Current stock quantities per product and location</field>
+    </record>
+
+    <!-- Product: Categories -->
+    <record id="intent_product_categories" model="ai.intent">
+        <field name="name">Product Categories</field>
+        <field name="model_id" ref="product.model_product_category"/>
+        <field name="keywords">product category,product categories,category,categories,product type</field>
+        <field name="default_fields">name,parent_id,product_count</field>
+        <field name="default_limit">20</field>
+        <field name="priority">6</field>
+        <field name="description">Product categories and their hierarchy</field>
+    </record>
+
+    <!-- Calendar: Events -->
+    <record id="intent_calendar" model="ai.intent">
+        <field name="name">Calendar Events / Meetings</field>
+        <field name="model_id" ref="calendar.model_calendar_event"/>
+        <field name="keywords">meeting,meetings,event,events,calendar,schedule,appointment,appointments,call,calls</field>
+        <field name="default_fields">name,start,stop,user_id,partner_ids,location</field>
+        <field name="default_limit">10</field>
+        <field name="priority">8</field>
+        <field name="description">Calendar events, meetings, and scheduled appointments</field>
+    </record>
+
+    <!-- Base: Companies -->
+    <record id="intent_companies" model="ai.intent">
+        <field name="name">Companies</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="keywords">company,companies,organization,branch,branches</field>
+        <field name="default_fields">name,email,phone,city,country_id,currency_id</field>
+        <field name="default_limit">10</field>
+        <field name="priority">7</field>
+        <field name="description">Companies configured in Odoo</field>
+    <!-- Knowledge: Articles -->
+    <record id="intent_knowledge" model="ai.intent">
+        <field name="name">Knowledge Articles</field>
+        <field name="model_id" ref="knowledge.model_knowledge_article"/>
+        <field name="keywords">knowledge,article,articles,documentation,wiki,help,manual,note,notes,internal knowledge,guide,guides,how to,procedure</field>
+        <field name="default_fields">name,body,create_date</field>
+        <field name="default_limit">10</field>
+        <field name="priority">8</field>
+        <field name="description">Internal knowledge base articles and documentation</field>
+    </record>
+
+</odoo>

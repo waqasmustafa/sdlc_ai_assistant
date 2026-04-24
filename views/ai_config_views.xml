@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Configuration Form -->
+    <record id="view_ai_config_form" model="ir.ui.view">
+        <field name="name">ai.config.form</field>
+        <field name="model">ai.config</field>
+        <field name="arch" type="xml">
+            <form string="AI Configuration">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object" class="btn-primary" icon="fa-plug"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. My AI Config"/></h1>
+                    </div>
+                    <group>
+                        <group string="AI Provider Settings">
+                            <field name="provider" widget="radio" options="{'horizontal': true}"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Advanced Parameters">
+                            <field name="temperature" widget="float_slider" options="{'min': 0, 'max': 1, 'step': 0.1}"/>
+                            <field name="max_tokens"/>
+                            <field name="timeout"/>
+                        </group>
+                    </group>
+
+                    <group string="Groq Cloud Credentials" invisible="provider != 'groq'">
+                        <field name="groq_api_key" password="True" required="provider == 'groq'"/>
+                        <field name="groq_model" required="provider == 'groq'"/>
+                    </group>
+
+                    <group string="OpenAI Credentials" invisible="provider != 'openai'">
+                        <field name="openai_api_key" password="True" required="provider == 'openai'"/>
+                        <field name="openai_model" required="provider == 'openai'"/>
+                    </group>
+
+                    <div class="alert alert-info mt-3" role="alert">
+                        <i class="fa fa-info-circle me-2"/>
+                        <span invisible="provider != 'groq'">
+                            This AI Assistant is currently powered by <strong>Groq Cloud AI</strong>. Groq offers ultra-fast inference with Llama models.
+                        </span>
+                        <span invisible="provider != 'openai'">
+                            This AI Assistant is currently powered by <strong>OpenAI</strong>. Using industry-standard GPT models for maximum accuracy.
+                        </span>
+                        <br/>
+                        <small class="text-muted">You can switch between models anytime from the chat interface using the dropdown menu.</small>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Configuration Tree -->
+    <record id="view_ai_config_tree" model="ir.ui.view">
+        <field name="name">ai.config.tree</field>
+        <field name="model">ai.config</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="provider"/>
+                <field name="groq_model" string="Model" invisible="provider != 'groq'"/>
+                <field name="openai_model" string="Model" invisible="provider != 'openai'"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Configuration Action -->
+    <record id="action_ai_config" model="ir.actions.act_window">
+        <field name="name">AI Configuration</field>
+        <field name="res_model">ai.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Intent Views -->
+    <record id="view_ai_intent_form" model="ir.ui.view">
+        <field name="name">ai.intent.form</field>
+        <field name="model">ai.intent</field>
+        <field name="arch" type="xml">
+            <form string="AI Intent">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="model_id"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="priority"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="default_limit"/>
+                        </group>
+                    </group>
+                    <group string="Keywords">
+                        <field name="keywords" nolabel="1"
+                               placeholder="contact,contacts,customer,customers,partner"/>
+                    </group>
+                    <group string="Default Fields to Fetch">
+                        <field name="default_fields" nolabel="1"
+                               placeholder="name,email,phone,city"/>
+                    </group>
+                    <group string="Description (sent to AI as context)">
+                        <field name="description" nolabel="1"
+                               placeholder="Contacts and partners in the system"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ai_intent_tree" model="ir.ui.view">
+        <field name="name">ai.intent.tree</field>
+        <field name="model">ai.intent</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="model_name"/>
+                <field name="default_limit"/>
+                <field name="priority"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ai_intent" model="ir.actions.act_window">
+        <field name="name">Intent Mappings</field>
+        <field name="res_model">ai.intent</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

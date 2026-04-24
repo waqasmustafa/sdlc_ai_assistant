@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-level menu — only visible if user has AI Assistant access -->
+    <menuitem id="menu_ai_root"
+              name="AI Assistant"
+              web_icon="sdlc_ai_assistant,static/description/icon.png"
+              groups="group_ai_user"
+              sequence="100"/>
+
+    <!-- Chat — visible to User and Admin -->
+    <menuitem id="menu_ai_chat"
+              name="Chat"
+              parent="menu_ai_root"
+              action="action_ai_chat"
+              groups="group_ai_user"
+              sequence="10"/>
+
+    <!-- History — visible to User and Admin -->
+    <menuitem id="menu_ai_conversations"
+              name="Conversation History"
+              parent="menu_ai_root"
+              action="action_ai_conversation"
+              groups="group_ai_user"
+              sequence="20"/>
+
+    <!-- Configuration — visible to Admin only -->
+    <menuitem id="menu_ai_config_parent"
+              name="Configuration"
+              parent="menu_ai_root"
+              sequence="90"
+              groups="group_ai_manager"/>
+
+    <menuitem id="menu_ai_config"
+              name="AI Settings"
+              parent="menu_ai_config_parent"
+              action="action_ai_config"
+              sequence="10"/>
+
+    <menuitem id="menu_ai_intents"
+              name="Intent Mappings"
+              parent="menu_ai_config_parent"
+              action="action_ai_intent"
+              sequence="20"/>
+</odoo>

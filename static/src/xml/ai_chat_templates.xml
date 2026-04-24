@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="sdlc_ai_assistant.AiChatAction">
+        <div class="o_ai_chat_container d-flex h-100">
+
+            <!-- Sidebar -->
+            <div t-att-class="'o_ai_sidebar border-end bg-light flex-shrink-0 ' + (state.sidebarOpen ? '' : 'd-none d-md-block')"
+                 style="width: 280px; min-width: 280px;">
+                <div class="p-3 border-bottom d-flex gap-2">
+                    <button class="btn btn-primary flex-grow-1" t-on-click="onNewConversation"
+                            title="New Chat (Alt+N)">
+                        <i class="fa fa-plus me-1"/> New Chat
+                    </button>
+                </div>
+                <div class="o_ai_conversation_list overflow-auto" style="height: calc(100% - 70px);">
+                    <t t-foreach="state.conversations" t-as="conv" t-key="conv.id">
+                        <div class="o_ai_conv_item p-2 px-3 border-bottom d-flex align-items-center"
+                             t-att-class="{'bg-white fw-bold': conv.id === state.conversationId}"
+                             style="cursor: pointer;"
+                             t-on-click="() => this.onSelectConversation(conv.id)">
+
+                            <!-- Rename mode -->
+                            <t t-if="state.renamingConvId === conv.id">
+                                <input type="text" class="form-control form-control-sm"
+                                       t-att-value="state.renameValue"
+                                       t-on-input="onRenameInput"
+                                       t-on-keydown="onRenameKeyDown"
+                                       t-on-click.stop=""
+                                       placeholder="Enter name..."
+                                       autofocus="true"/>
+                                <button class="btn btn-link btn-sm text-success p-0 ms-1"
+                                        t-on-click.stop="onSaveRename" title="Save">
+                                    <i class="fa fa-check"/>
+                                </button>
+                            </t>
+
+                            <!-- Normal mode -->
+                            <t t-else="">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="text-truncate small"><t t-esc="conv.name"/></div>
+                                    <div class="text-muted" style="font-size: 11px;">
+                                        <t t-esc="conv.create_date"/> · <t t-esc="conv.message_count"/> msgs
+                                    </div>
+                                </div>
+                                <div class="o_ai_conv_actions d-flex gap-1 ms-1">
+                                    <button class="btn btn-link btn-sm text-muted p-0 o_ai_action_btn"
+                                            title="Rename"
+                                            t-on-click="(ev) => this.onStartRename(ev, conv)">
+                                        <i class="fa fa-pencil" style="font-size: 11px;"/>
+                                    </button>
+                                    <button class="btn btn-link btn-sm text-danger p-0 o_ai_action_btn"
+                                            title="Delete"
+                                            t-on-click="(ev) => this.onDeleteConversation(ev, conv.id)">
+                                        <i class="fa fa-trash" style="font-size: 11px;"/>
+                                    </button>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <div t-if="!state.conversations.length" class="p-3 text-muted text-center small">
+                        No conversations yet. Ask a question to start!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="o_ai_main_area flex-grow-1 d-flex flex-column min-w-0">
+
+                <!-- Header -->
+                <div class="o_ai_header p-3 border-bottom d-flex align-items-center flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary btn-sm d-md-none me-1" t-on-click="toggleSidebar">
+                        <i class="fa fa-bars"/>
+                    </button>
+                    <i class="fa fa-robot fa-lg me-2 text-primary d-none d-sm-inline"/>
+                    <h4 class="mb-0 me-3 d-none d-sm-block">AI Assistant</h4>
+                    <h6 class="mb-0 me-2 d-sm-none">AI</h6>
+                    <div class="d-flex align-items-center flex-wrap gap-1" t-if="state.models.length">
+                        <span class="text-muted small me-1 d-none d-md-inline">Model:</span>
+                        <select class="form-select form-select-sm"
+                                style="width: auto; min-width: 150px; max-width: 250px;"
+                                t-on-change="onModelChange">
+                            <t t-foreach="state.models" t-as="m" t-key="m_index">
+                                <option t-att-value="m.model"
+                                        t-att-selected="m.model === state.selectedModel">
+                                    <t t-esc="m.label"/>
+                                </option>
+                            </t>
+                        </select>
+                        <span class="badge bg-success ms-1">Groq</span>
+                    </div>
+                    <!-- Download chat + shortcuts hint -->
+                    <div class="ms-auto d-flex align-items-center gap-2">
+                        <button t-if="state.messages.length"
+                                class="btn btn-outline-secondary btn-sm"
+                                t-on-click="downloadChat"
+                                title="Download this conversation">
+                            <i class="fa fa-download me-1"/>
+                            <span class="d-none d-lg-inline">Download Chat</span>
+                        </button>
+                        <span class="text-muted d-none d-lg-inline" style="font-size: 10px;">
+                            Alt+N: New Chat | Esc: Clear
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="o_ai_messages flex-grow-1 overflow-auto p-3" t-ref="messagesContainer">
+
+                    <!-- Load more button -->
+                    <div t-if="state.hasMoreMessages" class="text-center mb-3">
+                        <button class="btn btn-outline-secondary btn-sm"
+                                t-on-click="onLoadMoreMessages"
+                                t-att-disabled="state.loadingMore">
+                            <t t-if="state.loadingMore">
+                                <span class="spinner-border spinner-border-sm me-1"/>Loading...
+                            </t>
+                            <t t-else="">
+                                <i class="fa fa-arrow-up me-1"/>Load older messages
+                            </t>
+                        </button>
+                    </div>
+
+                    <t t-foreach="state.messages" t-as="msg" t-key="msg_index">
+
+                        <!-- User message -->
+                        <div t-if="msg.role === 'user'" class="d-flex justify-content-end mb-3">
+                            <div class="o_ai_msg_user bg-primary text-white rounded-3 p-3"
+                                 style="max-width: 85%; word-wrap: break-word;">
+                                <t t-esc="msg.content"/>
+                            </div>
+                        </div>
+
+                        <!-- Assistant message -->
+                        <div t-if="msg.role === 'assistant'" class="d-flex justify-content-start mb-3">
+                            <div class="o_ai_msg_assistant bg-white border rounded-3 p-3 shadow-sm"
+                                 style="max-width: 95%; word-wrap: break-word;">
+                                <div t-if="msg.content" class="o_ai_msg_content mb-2"
+                                     style="white-space: pre-wrap;" t-esc="msg.content"/>
+
+                                <t t-if="msg.tables and msg.tables.length">
+                                    <t t-foreach="msg.tables" t-as="table" t-key="table_index">
+                                        <div class="o_ai_table_wrapper mb-2">
+                                            <div class="d-flex align-items-center justify-content-between mb-1 flex-wrap gap-1">
+                                                <div class="fw-bold small text-primary">
+                                                    <i class="fa fa-table me-1"/>
+                                                    <t t-esc="table.label"/>
+                                                    <span class="text-muted fw-normal ms-1"
+                                                          t-if="table.total_count > table.shown_count">
+                                                        (showing <t t-esc="table.shown_count"/> of <t t-esc="table.total_count"/>)
+                                                    </span>
+                                                    <span class="text-muted fw-normal ms-1"
+                                                          t-elif="table.shown_count > 0">
+                                                        (<t t-esc="table.shown_count"/> records)
+                                                    </span>
+                                                </div>
+                                                <!-- Export buttons -->
+                                                <div class="d-flex gap-1" t-if="table.rows and table.rows.length > 0 and table.field_keys[0] !== 'info' and table.field_keys[0] !== 'count'">
+                                                    <button class="btn btn-outline-secondary btn-sm py-0 px-1"
+                                                            title="Copy to clipboard"
+                                                            t-on-click="() => this.copyTableToClipboard(table)">
+                                                        <i class="fa fa-clipboard" style="font-size: 11px;"/>
+                                                    </button>
+                                                    <button class="btn btn-outline-success btn-sm py-0 px-1"
+                                                            title="Download CSV"
+                                                            t-on-click="() => this.exportTableCSV(table)">
+                                                        <i class="fa fa-file-text-o" style="font-size: 11px;"/> CSV
+                                                    </button>
+                                                    <button class="btn btn-outline-info btn-sm py-0 px-1"
+                                                            title="Download JSON"
+                                                            t-on-click="() => this.exportTableJSON(table)">
+                                                        <i class="fa fa-code" style="font-size: 11px;"/> JSON
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered table-hover mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <t t-foreach="table.headers" t-as="header" t-key="header_index">
+                                                                <th class="small"><t t-esc="header"/></th>
+                                                            </t>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-foreach="table.rows" t-as="row" t-key="row_index">
+                                                            <tr>
+                                                                <t t-foreach="row" t-as="cell" t-key="cell_index">
+                                                                    <td class="small"><t t-esc="cell"/></td>
+                                                                </t>
+                                                            </tr>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+
+                                <!-- Message footer: metadata + copy button -->
+                                <div class="d-flex align-items-center justify-content-between mt-1" style="font-size: 11px;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span t-if="msg.model_accessed" class="text-muted">
+                                            <i class="fa fa-database me-1"/><t t-esc="msg.model_accessed"/>
+                                        </span>
+                                        <span t-if="msg.response_time" class="text-muted">
+                                            <i class="fa fa-clock-o me-1"/><t t-esc="msg.response_time"/>s
+                                        </span>
+                                    </div>
+                                    <button class="btn btn-link btn-sm text-muted p-0 o_ai_copy_msg_btn"
+                                            title="Copy response"
+                                            t-on-click="() => this.copyMessageToClipboard(msg.content)">
+                                        <i class="fa fa-copy" style="font-size: 11px;"/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System message -->
+                        <div t-if="msg.role === 'system'" class="d-flex justify-content-center mb-3">
+                            <div class="text-muted small fst-italic"><t t-esc="msg.content"/></div>
+                        </div>
+
+                    </t>
+
+                    <!-- Typing indicator -->
+                    <div t-if="state.loading" class="d-flex justify-content-start mb-3">
+                        <div class="bg-white border rounded-3 p-3 shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="o_ai_typing_dots me-2">
+                                    <span class="o_ai_dot"/>
+                                    <span class="o_ai_dot"/>
+                                    <span class="o_ai_dot"/>
+                                </div>
+                                <span class="text-muted small">AI is thinking...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div t-if="!state.messages.length and !state.loading"
+                         class="d-flex flex-column align-items-center justify-content-center h-100 text-muted px-3">
+                        <i class="fa fa-comments fa-3x mb-3"/>
+                        <h5 class="text-center">Ask me anything about your Odoo data</h5>
+                        <p class="text-center small">Try these examples:</p>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    t-on-click="() => this.onExampleClick('Show me all contacts')">Show me all contacts</button>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    t-on-click="() => this.onExampleClick('What are my latest leads?')">Latest leads?</button>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    t-on-click="() => this.onExampleClick('List employees in sales department')">Employees in sales</button>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    t-on-click="() => this.onExampleClick('Top 5 sales orders this month')">Top sales this month</button>
+                        </div>
+                        <div class="mt-4 text-center" style="font-size: 11px; max-width: 400px;">
+                            <i class="fa fa-info-circle me-1"/>
+                            AI responses may not be 100% accurate. Please verify important business data before making decisions.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="o_ai_input_area border-top p-2 p-md-3 bg-light">
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control"
+                               t-att-placeholder="'Ask about contacts, leads, sales, employees...'"
+                               t-att-value="state.inputValue"
+                               t-on-input="onInputChange"
+                               t-on-keydown="onKeyDown"
+                               t-att-disabled="state.loading"
+                               t-ref="chatInput"/>
+                        <button class="btn btn-primary px-3 px-md-4"
+                                t-on-click="onSend"
+                                t-att-disabled="state.loading || !state.inputValue.trim()">
+                            <i class="fa fa-paper-plane"/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

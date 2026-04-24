@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Conversation Form -->
+    <record id="view_ai_conversation_form" model="ir.ui.view">
+        <field name="name">ai.conversation.form</field>
+        <field name="model">ai.conversation</field>
+        <field name="arch" type="xml">
+            <form string="AI Conversation">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="user_id"/>
+                        <field name="create_date"/>
+                        <field name="message_count"/>
+                    </group>
+                    <notebook>
+                        <page string="Messages" name="messages">
+                            <field name="message_ids" nolabel="1">
+                                <list>
+                                    <field name="create_date" string="Time"/>
+                                    <field name="role"/>
+                                    <field name="content"/>
+                                    <field name="model_accessed" optional="show"/>
+                                    <field name="records_accessed" optional="show"/>
+                                    <field name="tokens_used" optional="hide"/>
+                                    <field name="ai_provider" optional="hide"/>
+                                    <field name="response_time" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Conversation Tree -->
+    <record id="view_ai_conversation_tree" model="ir.ui.view">
+        <field name="name">ai.conversation.tree</field>
+        <field name="model">ai.conversation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="message_count"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ai_conversation" model="ir.actions.act_window">
+        <field name="name">Conversations</field>
+        <field name="res_model">ai.conversation</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_user_id': uid}</field>
+    </record>
+
+</odoo>

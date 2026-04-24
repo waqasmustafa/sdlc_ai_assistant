@@ -1,0 +1,138 @@
+/* ══════════════════════════════════════════════════════════════
+   SDLC AI Assistant — Chat UI Styles
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Typing indicator dots animation ────────────────────────── */
+.o_ai_typing_dots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.o_ai_dot {
+    width: 8px;
+    height: 8px;
+    background-color: #6c757d;
+    border-radius: 50%;
+    display: inline-block;
+    animation: o_ai_bounce 1.4s ease-in-out infinite both;
+}
+
+.o_ai_dot:nth-child(1) { animation-delay: 0s; }
+.o_ai_dot:nth-child(2) { animation-delay: 0.2s; }
+.o_ai_dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes o_ai_bounce {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ── Sidebar conversation items ─────────────────────────────── */
+.o_ai_conv_item:hover {
+    background-color: #e9ecef !important;
+}
+
+/* Hide action buttons until hover */
+.o_ai_conv_actions .o_ai_action_btn {
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.o_ai_conv_item:hover .o_ai_action_btn {
+    opacity: 1;
+}
+
+/* Copy message button */
+.o_ai_copy_msg_btn {
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.o_ai_msg_assistant:hover .o_ai_copy_msg_btn {
+    opacity: 1;
+}
+
+/* ── Message bubbles ────────────────────────────────────────── */
+.o_ai_msg_user {
+    border-radius: 18px 18px 4px 18px !important;
+}
+
+.o_ai_msg_assistant {
+    border-radius: 18px 18px 18px 4px !important;
+}
+
+/* ── Table export buttons ───────────────────────────────────── */
+.o_ai_table_wrapper .btn {
+    font-size: 11px;
+}
+
+/* ── Mobile Responsive ──────────────────────────────────────── */
+
+/* Small screens: hide sidebar by default */
+@media (max-width: 767.98px) {
+    .o_ai_sidebar {
+        position: absolute;
+        z-index: 100;
+        height: 100%;
+        width: 280px !important;
+        min-width: 280px !important;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .o_ai_sidebar.d-none {
+        display: none !important;
+    }
+
+    .o_ai_msg_user {
+        max-width: 90% !important;
+    }
+
+    .o_ai_msg_assistant {
+        max-width: 98% !important;
+    }
+
+    .o_ai_header h4 {
+        font-size: 1rem;
+    }
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .o_ai_sidebar {
+        width: 220px !important;
+        min-width: 220px !important;
+    }
+}
+
+/* ── Scrollbar styling ──────────────────────────────────────── */
+.o_ai_messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.o_ai_messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.o_ai_messages::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+.o_ai_messages::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+}
+
+.o_ai_conversation_list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.o_ai_conversation_list::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 2px;
+}
