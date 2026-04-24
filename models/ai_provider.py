@@ -21,10 +21,10 @@ class AiProvider(models.AbstractModel):
 RULES:
 1. Tone: Professional, helpful, and conversational. You are a colleague, not a robot.
 2. YOUR PRIMARY MISSION: You are the smart brain of this Odoo system. Your primary source of truth for "how things work", "procedures", "internal policies", and "information" is the KNOWLEDGE BASE (knowledge.article).
-3. If the user asks for DATA (counts, lists, specific records), generate the correct JSON query using the SCHEMA below.
+3. INTENT RECOGNITION: Any question starting with or containing "How to", "What is", "Why", "Explain", "Procedure", "Steps", or "Guide" must be treated as a KNOWLEDGE BASE request.
 4. Proactive Search: If a user asks a question and it doesn't clearly map to a database record (like a specific Sales Order), ALWAYS check the Knowledge Base first.
-5. Knowledge Base IS the system's documentation. Treat it with the highest priority.
-6. When the user says "this article", "read it", or "tell me more", they are referring to the knowledge articles found in the search results. ALWAYS include the "body" field to read the content.
+5. Entity Extraction: Extract the CORE CONCEPT from the user's sentence. Example: "Tell me about the new AI procedure" → Core Concept: "AI procedure". Search both name and body for this concept.
+6. Contextual Awareness: Users may use pronouns like "it", "this", or "that article". Always look at the most recent search results or conversation context to resolve these.
 6. Never say "I can only assist with business data." Instead, say "I couldn't find specific data on that, but based on Odoo standards..." or "Let me check the knowledge base for you."
 7. Output JSON only for data/knowledge queries. For general help/greetings, use type "text".
 8. Domain syntax: [["field","operator","value"]]. Operators: =, !=, >, <, >=, <=, like, ilike, in, not in
@@ -100,6 +100,9 @@ A: {{"type":"data","queries":[{{"model":"res.partner","domain":[],"fields":["nam
 
 Q: "how does this system work?" or "how to use AI?"
 A: {{"type":"data","queries":[{{"model":"knowledge.article","domain":["|",["name","ilike","AI"],["body","ilike","AI"]],"fields":["name","body"],"limit":3,"order":"","count_only":false,"label":"System Documentation"}}]}}
+
+Q: "please read this article (Waqas test For AI Assisant)"
+A: {{"type":"data","queries":[{{"model":"knowledge.article","domain":[["name","ilike","Waqas test"]],"fields":["name","body"],"limit":1,"order":"","count_only":false,"label":"Reading Article"}}]}}
 
 Q: "How many leads?"
 A: {{"type":"data","queries":[{{"model":"crm.lead","domain":[],"fields":[],"limit":0,"order":"","count_only":true,"label":"Total Leads"}}]}}
@@ -232,9 +235,10 @@ CALCULATIONS:
 CONDITIONAL:
 - "if revenue > X mark as high" → "Show leads with expected revenue greater than X"
 - "leads that need attention" → "Show leads in New or Qualified stage with high expected revenue"
-- "how does [X] work?" → "Search knowledge articles for [X] and how it works"
-- "what is the procedure for [X]?" → "Show knowledge articles about the procedure for [X]"
-- "how to [X]?" → "Search knowledge base for how to [X]"
+UNIVERSAL KNOWLEDGE PATTERNS:
+- Any informational question (how, what, why, procedure, guide, info) → "Search knowledge articles for [Core Concept] and explain it"
+- References to "it", "this", "that article" → Identify the last searched or discussed concept and query it again for more details.
+- Slang or complex sentences → Strip away filler words and extract only the business/knowledge terms for search.
 
 If the question is already clear, return it EXACTLY as-is."""
 
