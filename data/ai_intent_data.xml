@@ -205,6 +205,8 @@
         <field name="default_limit">10</field>
         <field name="priority">7</field>
         <field name="description">Companies configured in Odoo</field>
+    </record>
+
     <!-- Knowledge: Articles -->
     <record id="intent_knowledge" model="ai.intent">
         <field name="name">Knowledge Articles</field>
